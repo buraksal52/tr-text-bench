@@ -42,14 +42,14 @@ Done when: label meaning is confirmed and logged, splits are saved, id files exi
 Done when: results are saved and the leakage checklist in `EVAL_PROTOCOL.md` passes.
 
 ## Phase 3: BERTurk fine-tuning
-- [ ] Check token length distribution and choose `max_length`
-- [ ] Fine-tune `dbmdz/bert-base-turkish-cased` with Hugging Face `Trainer`
-- [ ] Starting values: learning rate 2e-5 to 5e-5, 2-3 epochs, batch size 16 or 32
-- [ ] Use the full train split if time allows, otherwise a subset (record which)
-- [ ] Pick the checkpoint by validation macro-F1
-- [ ] Test evaluation (ask first) and timing
-- [ ] If time: 3 seeds
-- [ ] If the local device is too slow: ask before moving to Colab
+- [x] Check token length distribution and choose `max_length`
+- [x] Fine-tune `dbmdz/bert-base-turkish-cased` with Hugging Face `Trainer`
+- [x] Starting values: learning rate 2e-5 to 5e-5, 2-3 epochs, batch size 16 or 32
+- [x] Use the full train split if time allows, otherwise a subset (record which)
+- [x] Pick the checkpoint by validation macro-F1
+- [x] Test evaluation (ask first) and timing
+- [ ] If time: 3 seeds (not done, 1 seed only, see D-017)
+- [x] If the local device is too slow: ask before moving to Colab
 Done when: checkpoint chosen, test results saved, training time recorded.
 
 ## Phase 4: LLM few-shot

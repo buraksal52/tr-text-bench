@@ -99,3 +99,15 @@ The walkthrough files in `learn/` explain the reasoning in more detail and only 
 - Not tested: Turkish-aware lowercasing (default `lowercase=True` was used); `min_df` and the char n-gram range were fixed, not tuned.
 - Final test (done once, with the user's permission): macro-F1 0.8162, accuracy 0.8435 on 8,934 examples; 0.8228 / 0.850 on the 1000-example subset. Train time 14.8 s, 0.19 ms per example (batch prediction on CPU, warm-up excluded). Files: `results/tfidf_lr_test*.json` and predictions CSVs.
 - Status: fixed. Single run, no seeds to average (Logistic Regression with lbfgs is deterministic for a fixed seed and data).
+
+## D-017: BERTurk fine-tuning setup and result (single seed)
+- Decision: `dbmdz/bert-base-turkish-cased` fine-tuned with HF `Trainer` on the cleaned train split (60,294 rows), 3 epochs, learning rate 2e-5, batch size 32, weight decay 0.01, warmup 10%, seed 42. Shared code in `src/berturk_common.py`.
+- `max_length=192`: about the 95th percentile of train token lengths (198); 5.3% of reviews are cut. Chosen to keep training time and memory under control on a laptop.
+- `train_sampling_strategy="group_by_length"` (batches of similar length, less padding): about 2x faster on MPS. Side effect: batches are less random than plain shuffling.
+- Device: Apple MPS (D-012). `accelerate` was added to `requirements.txt` because `Trainer` needs it. Training time: 91.7 min for 3 epochs.
+- Checkpoint chosen by validation macro-F1: epoch 1 (0.8519; epochs 2 and 3: 0.8503, 0.8510). Validation loss rose after epoch 1 (0.315 -> 0.345) while train loss kept falling: mild overfitting, so 3 epochs were more than needed.
+- Final test (done once, with the user's permission): macro-F1 0.8546, accuracy 0.8801 on 8,934 examples; macro-F1 0.8561, accuracy 0.882 on the 1000-example subset (`results/berturk_test_subset1000_seed42.json`). Prediction 18.4 ms per example (MPS, batch 64, warm-up excluded). Cost 0.
+- Compared with TF-IDF + LR (D-016): macro-F1 +0.038, accuracy +0.037, but about 100x slower to predict and about 370x slower to train.
+- Seeds: the plan said "3 seeds if time". Seed 43 was trained but the disk became full while saving, the run crashed after epoch 3 (validation macro-F1 0.8535) and was resumed from the epoch-2 checkpoint. The user then decided to stop because the laptop overheated. Seeds 43 and 44 are NOT part of the results. Only seed 42 counts.
+- Limitation: one seed, so no standard deviation. The 0.038 gap to TF-IDF is large compared with typical seed noise for BERT fine-tuning (usually a few tenths of a point), but we did not measure it.
+- Status: fixed (single seed).

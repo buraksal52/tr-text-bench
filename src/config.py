@@ -31,3 +31,10 @@ LLM_SUBSET_SIZE = 1000
 FEWSHOT_PER_CLASS = 5
 FEWSHOT_MIN_WORDS = 10
 FEWSHOT_MAX_WORDS = 60
+
+# BERTurk fine-tuning (max_length: the 95th percentile of train is ~198 tokens, see 03_check_token_lengths.py)
+CHECKPOINT_DIR = PROJECT_ROOT / "checkpoints"
+BERT_MAX_LENGTH = 192
+BERT_LEARNING_RATE = 2e-5
+BERT_EPOCHS = 3
+BERT_BATCH_SIZE = 32

@@ -1,0 +1,21 @@
+{
+  "model": "berturk",
+  "split": "test",
+  "n_examples": 8934,
+  "seed": 42,
+  "accuracy": 0.8801208865010074,
+  "macro_f1": 0.8546318952344816,
+  "precision_negative": 0.7929973066564063,
+  "precision_positive": 0.9158642462509866,
+  "recall_negative": 0.7945258288357748,
+  "recall_positive": 0.9151419558359621,
+  "time_per_example_ms": 18.393686267655514,
+  "tokenize_ms_per_example": 0.03456482290554452,
+  "model_ms_per_example": 18.35912144474997,
+  "eval_batch_size": 64,
+  "train_seconds": 5503.970691680908,
+  "hardware": "arm64, device mps",
+  "max_length": 192,
+  "cost_usd": 0.0,
+  "date": "2026-11-14"
+}
