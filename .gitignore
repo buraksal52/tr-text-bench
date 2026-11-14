@@ -1,2 +1,12 @@
 /learn
 .DS_Store
+.idea
+.venv
+.env
+__pycache__/
+.ipynb_checkpoints/
+data/raw/
+data/processed/
+*.pt
+*.safetensors
+checkpoints/
