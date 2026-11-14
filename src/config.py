@@ -38,3 +38,17 @@ BERT_MAX_LENGTH = 192
 BERT_LEARNING_RATE = 2e-5
 BERT_EPOCHS = 3
 BERT_BATCH_SIZE = 32
+
+# LLM (Phase 4). Chosen together with the user, see D-004 / D-018.
+LLM_MODEL_NAME = "gemini-3.6-flash"
+LLM_TEMPERATURE = 0
+# Prompt version is part of every cache entry, so a new prompt never reuses old answers.
+PROMPT_VERSION = "fewshot_v1"
+# 5-shot uses the first 5 ids of data/fewshot_ids.json (file order is fixed): 3 positive, 2 negative.
+FEWSHOT_USED = 5
+LLM_CACHE_DIR = RESULTS_DIR / "llm_cache"
+# Prices in USD per 1M tokens. Copy them from the official pricing page and write the date.
+# None means "not filled in yet": the script then prints tokens but no cost.
+LLM_PRICE_INPUT_PER_M = 0.75
+LLM_PRICE_OUTPUT_PER_M = 3.75
+LLM_PRICE_DATE = "2026-11-14"

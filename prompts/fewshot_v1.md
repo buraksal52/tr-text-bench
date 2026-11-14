@@ -1,6 +1,6 @@
 # fewshot_v1
 
-Status: draft. After its first run on the validation set this file is frozen. Changes go into `fewshot_v2.md`.
+Status: frozen (first validation run: 2026-11-14, gemini-3.6-flash). Changes go into `fewshot_v2.md`.
 
 ## Rules
 - Developed with train and validation examples only. Never with test examples.

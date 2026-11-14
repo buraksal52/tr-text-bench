@@ -53,13 +53,13 @@ Done when: results are saved and the leakage checklist in `EVAL_PROTOCOL.md` pas
 Done when: checkpoint chosen, test results saved, training time recorded.
 
 ## Phase 4: LLM few-shot
-- [ ] Choose the API model together with the user and log it in `DECISIONS.md`
-- [ ] Finalize `prompts/fewshot_v1.md`; 0-shot and 5-shot
-- [ ] Dry run on 20 validation examples to check parsing and cost
-- [ ] Ask before the 1000-example run (state number of calls and estimated cost)
-- [ ] Cache all responses; count parse errors
-- [ ] Log tokens and cost
-- [ ] Mini analysis: token counts of BERTurk tokenizer vs the LLM tokenizer on the same sentences
+- [x] Choose the API model together with the user and log it in `DECISIONS.md`
+- [x] Finalize `prompts/fewshot_v1.md`; 0-shot and 5-shot
+- [x] Dry run on 20 validation examples to check parsing and cost
+- [x] Ask before the 1000-example run (state number of calls and estimated cost)
+- [x] Cache all responses; count parse errors
+- [x] Log tokens and cost
+- [x] Mini analysis: token counts of BERTurk tokenizer vs the LLM tokenizer on the same sentences
 Done when: results on the 1000-example subset are saved with cost and parse error count.
 
 ## Phase 5: Comparison and error analysis

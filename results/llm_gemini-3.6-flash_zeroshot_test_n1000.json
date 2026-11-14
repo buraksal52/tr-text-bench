@@ -1,0 +1,19 @@
+{
+  "model": "gemini-3.6-flash",
+  "prompt_version": "fewshot_v1",
+  "mode": "zeroshot",
+  "split": "test",
+  "n_examples": 1000,
+  "accuracy": 0.866,
+  "macro_f1": 0.8428233616094887,
+  "parse_errors": 0,
+  "input_tokens": 166563,
+  "output_tokens": 2000,
+  "cost_usd": 0.13242225,
+  "price_input_per_m": 0.75,
+  "price_output_per_m": 3.75,
+  "price_date": "2026-11-14",
+  "temperature": 0,
+  "seconds_per_example": 0.8365337362289429,
+  "date": "2026-11-15"
+}

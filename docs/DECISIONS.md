@@ -21,10 +21,10 @@ The walkthrough files in `learn/` explain the reasoning in more detail and only 
 - Status: fixed.
 
 ## D-004: LLM
-- Decision: API model, to be chosen in Phase 4 together with the user.
+- Decision: Gemini 3.6 Flash (`gemini-3.6-flash`), chosen with the user in Phase 4 (see D-018).
 - Why: fast and cheap enough for 1000 examples, no local setup.
 - Alternatives: a local open model (bonus in Phase 7).
-- Status: open.
+- Status: fixed (D-018).
 
 ## D-005: Primary metric
 - Decision: macro-F1, with accuracy reported as well.
@@ -111,3 +111,14 @@ The walkthrough files in `learn/` explain the reasoning in more detail and only 
 - Seeds: the plan said "3 seeds if time". Seed 43 was trained but the disk became full while saving, the run crashed after epoch 3 (validation macro-F1 0.8535) and was resumed from the epoch-2 checkpoint. The user then decided to stop because the laptop overheated. Seeds 43 and 44 are NOT part of the results. Only seed 42 counts.
 - Limitation: one seed, so no standard deviation. The 0.038 gap to TF-IDF is large compared with typical seed noise for BERT fine-tuning (usually a few tenths of a point), but we did not measure it.
 - Status: fixed (single seed).
+
+## D-018: LLM setup and result (Gemini 3.6 Flash)
+- Decision: `gemini-3.6-flash` through the `google-genai` SDK (`google-genai==3.3.0`, added to `requirements.txt`). Temperature 0, thinking level MINIMAL (a one-word answer does not need reasoning), `max_output_tokens=50`. Prices used (given by the user, 2026-11-14): $0.75 per 1M input tokens, $3.75 per 1M output tokens.
+- Prompts: `prompts/fewshot_v1` (0-shot and 5-shot, frozen after its validation run). 5-shot uses the first 5 ids of `data/fewshot_ids.json` (3 positive, 2 negative), fixed order. This closes the open point of D-015.
+- Validation (200 random examples, seed 42): 0-shot macro-F1 0.879, 5-shot 0.866, no parse errors. Difference is within noise; 5-shot uses about 3x more input tokens. Rule fixed before the test run: 0-shot is the main result (equal quality, cheaper), 5-shot is reported as secondary. Test results were not used to choose.
+- Test, 1000-example subset (done once per prompt, with the user's permission): 0-shot macro-F1 0.8428, accuracy 0.866, cost $0.132, 0 parse errors. 5-shot macro-F1 0.8459, accuracy 0.869, cost $0.382, 0 parse errors. Latency about 0.8 s per example (API and network dependent, not comparable to local timing).
+- Same subset, other models: BERTurk 0.8561 / 0.882, TF-IDF + LR 0.8228 / 0.850. Gemini 0-shot is close to TF-IDF, below BERTurk; its extra errors are mostly positive reviews called negative (89 of 714).
+- Token comparison (100 validation reviews): BERTurk 74.5 tokens per review (1.56 per word), Gemini 96.7 (2.03 per word). Gemini needs about 30% more tokens for the same Turkish text.
+- Process incident: one 5-shot test run started before the price was in `config.py`, so its first report had no cost. All answers are cached, the report was recomputed for free from the cache. The 0-shot run was interrupted once and resumed from the cache without paying twice.
+- Limitations: Gemini may have seen these reviews in pretraining; one run per prompt (temperature 0 is not fully deterministic on an API); model name and price are valid for the date above.
+- Status: fixed.
