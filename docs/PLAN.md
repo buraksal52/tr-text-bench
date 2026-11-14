@@ -63,10 +63,10 @@ Done when: checkpoint chosen, test results saved, training time recorded.
 Done when: results on the 1000-example subset are saved with cost and parse error count.
 
 ## Phase 5: Comparison and error analysis
-- [ ] One table: all models on the same 1000-example subset; classical and BERTurk also on the full test split
-- [ ] Bootstrap confidence intervals and McNemar test
-- [ ] Error analysis notebook following `docs/ERROR_TAXONOMY.md` (about 100 examples)
-- [ ] 2-3 plots
+- [x] One table: all models on the same 1000-example subset; classical and BERTurk also on the full test split
+- [x] Bootstrap confidence intervals and McNemar test
+- [x] Error analysis notebook following `docs/ERROR_TAXONOMY.md` (about 100 examples)
+- [x] 2-3 plots
 Done when: table, plots and categorized errors are saved in `results/`.
 
 ## Phase 6: Publish

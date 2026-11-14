@@ -1,0 +1,7 @@
+model_a,model_b,only_a_right,only_b_right,p_value
+tfidf_lr,berturk,40,72,0.0032169399516518344
+tfidf_lr,gemini_0shot,60,76,0.19818134136296867
+tfidf_lr,gemini_5shot,55,74,0.11265741611168009
+berturk,gemini_0shot,51,35,0.10522535125694397
+berturk,gemini_5shot,51,38,0.20311681873649556
+gemini_0shot,gemini_5shot,13,16,0.711071103811264
