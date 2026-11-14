@@ -53,3 +53,15 @@ The walkthrough files in `learn/` explain the reasoning in more detail and only 
 ## D-010: Project name
 - Decision: `trsent-bench` for now.
 - Status: may change before publishing.
+
+## D-011: Python version and dependency pinning
+- Decision: Python 3.12.10; `requirements.txt` pins only the 8 packages we install directly (pandas, scikit-learn, torch, transformers, datasets, jupyter, python-dotenv, matplotlib).
+- Why: simple and readable; sub-dependencies are resolved by pip.
+- Alternatives: pin the full `pip freeze` (more exact, much longer file).
+- Status: fixed. Re-check in Phase 6 with a fresh environment.
+
+## D-012: Training device
+- Decision: use Apple MPS when available (checked in Phase 0: MPS works, torch 2.15.0).
+- Why: it is the fastest local option on this machine.
+- Alternatives: CPU (slow), Colab (ask first, see Phase 3).
+- Status: to be confirmed in Phase 3 (some MPS operations can be slow or missing).

@@ -14,12 +14,12 @@ Order matters, dates are flexible. Each session is about 2-3 hours.
 | S6 | Sun 22 Nov | Phase 6, publish |
 
 ## Phase 0: Setup
-- [ ] Create the folder structure: `src/`, `data/`, `notebooks/`, `results/`, `prompts/`, `docs/`
-- [ ] Python virtual environment (Python 3.11+), pinned `requirements.txt`
-- [ ] `src/config.py` with seed, paths, model names
-- [ ] `.env.example` with an API key placeholder; `.env` stays out of git
-- [ ] Check which device PyTorch can use (CPU / MPS / CUDA)
-- [ ] First commit
+- [x] Create the folder structure: `src/`, `data/`, `notebooks/`, `results/`, `prompts/`, `docs/`
+- [x] Python virtual environment (Python 3.11+), pinned `requirements.txt`
+- [x] `src/config.py` with seed, paths, model names
+- [x] `.env.example` with an API key placeholder; `.env` stays out of git
+- [x] Check which device PyTorch can use (CPU / MPS / CUDA)
+- [x] First commit
 Done when: environment runs, `config.py` imports, repo is committed.
 
 ## Phase 1: Data
