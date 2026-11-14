@@ -35,10 +35,10 @@ Done when: environment runs, `config.py` imports, repo is committed.
 Done when: label meaning is confirmed and logged, splits are saved, id files exist.
 
 ## Phase 2: Baseline (TF-IDF + Logistic Regression)
-- [ ] Word n-gram and character n-gram TF-IDF, Logistic Regression, in one sklearn pipeline
-- [ ] Small grid search on validation only (`C`, n-gram range)
-- [ ] Final test evaluation (ask first): accuracy, macro-F1, per-class precision/recall, confusion matrix, time per example
-- [ ] Save `results/` JSON and predictions CSV
+- [x] Word n-gram and character n-gram TF-IDF, Logistic Regression, in one sklearn pipeline
+- [x] Small grid search on validation only (`C`, n-gram range)
+- [x] Final test evaluation (ask first): accuracy, macro-F1, per-class precision/recall, confusion matrix, time per example
+- [x] Save `results/` JSON and predictions CSV
 Done when: results are saved and the leakage checklist in `EVAL_PROTOCOL.md` passes.
 
 ## Phase 3: BERTurk fine-tuning

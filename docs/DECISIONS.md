@@ -90,3 +90,12 @@ The walkthrough files in `learn/` explain the reasoning in more detail and only 
 
 ## Majority baseline (validation)
 - Always predicts positive: accuracy 0.7087, macro-F1 0.4148. Saved as `results/majority_validation.json`.
+
+## D-016: TF-IDF + Logistic Regression setup and result
+- Decision: one sklearn Pipeline: word TF-IDF (`min_df=2`) and character TF-IDF (`char_wb`, 3-5 grams, `min_df=2`) side by side, then Logistic Regression (`max_iter=1000`, seed 42). Shared in `src/tfidf_pipeline.py`.
+- Tuning: plain loop over 12 combinations on validation only (`C` in 0.1/1/10, word n-gram max 1/2, `class_weight` none/balanced). `GridSearchCV` was not used, because its inner cross-validation would split train and blur the "tune on validation only" rule. Grid table: `results/tfidf_lr_grid_validation.csv`.
+- Best on validation: `C=1`, word n-grams up to 2, `class_weight="balanced"` (macro-F1 0.8124, accuracy 0.840).
+- `class_weight="balanced"` raised macro-F1 in all 6 (`C`, n-gram) pairs (+0.03 to +0.04 at `C=0.1`, only +0.002 to +0.004 at `C=10`) and lowered accuracy by 0.006 to 0.017. It helps the minority class (negative).
+- Not tested: Turkish-aware lowercasing (default `lowercase=True` was used); `min_df` and the char n-gram range were fixed, not tuned.
+- Final test (done once, with the user's permission): macro-F1 0.8162, accuracy 0.8435 on 8,934 examples; 0.8228 / 0.850 on the 1000-example subset. Train time 14.8 s, 0.19 ms per example (batch prediction on CPU, warm-up excluded). Files: `results/tfidf_lr_test*.json` and predictions CSVs.
+- Status: fixed. Single run, no seeds to average (Logistic Regression with lbfgs is deterministic for a fixed seed and data).

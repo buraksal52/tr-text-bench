@@ -1,0 +1,5 @@
+{
+  "c_value": 1.0,
+  "word_ngram_max": 2,
+  "class_weight": "balanced"
+}

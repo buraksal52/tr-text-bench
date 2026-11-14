@@ -1,0 +1,22 @@
+{
+  "model": "tfidf_lr",
+  "split": "test",
+  "n_examples": 8934,
+  "seed": 42,
+  "accuracy": 0.8435191403626595,
+  "macro_f1": 0.8162064371213866,
+  "precision_negative": 0.7064917127071824,
+  "precision_positive": 0.9092414706856575,
+  "recall_negative": 0.7887432536622976,
+  "recall_positive": 0.8659305993690851,
+  "time_per_example_ms": 0.1898063544808604,
+  "train_seconds": 14.82784390449524,
+  "hardware": "arm",
+  "params": {
+    "c_value": 1.0,
+    "word_ngram_max": 2,
+    "class_weight": "balanced"
+  },
+  "cost_usd": 0.0,
+  "date": "2026-11-14"
+}
