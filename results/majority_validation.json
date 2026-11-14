@@ -1,0 +1,15 @@
+{
+  "model": "majority",
+  "split": "validation",
+  "n_examples": 8905,
+  "seed": 42,
+  "accuracy": 0.7087029758562605,
+  "macro_f1": 0.414760778128286,
+  "precision_negative": 0.0,
+  "precision_positive": 0.7087029758562605,
+  "recall_negative": 0.0,
+  "recall_positive": 1.0,
+  "time_per_example_ms": null,
+  "cost_usd": 0.0,
+  "date": "2026-11-14"
+}

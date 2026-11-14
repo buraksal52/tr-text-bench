@@ -7,7 +7,7 @@ The walkthrough files in `learn/` explain the reasoning in more detail and only 
 - Decision: SentiTurca, `movies` config (binary sentiment).
 - Why: official splits, binary task, part of a published Turkish benchmark, film reviews give good error analysis material.
 - Alternatives: BüyükSinema 10-class (kept as a bonus), Beyazperde-only sets, other Turkish sentiment sets.
-- Status: label meaning and config name still to be verified in Phase 1.
+- Status: verified in Phase 1 (config `movies` exists; 0 = negative, 1 = positive). See D-013.
 
 ## D-002: Splits
 - Decision: use the official train / validation / test splits.
@@ -65,3 +65,28 @@ The walkthrough files in `learn/` explain the reasoning in more detail and only 
 - Why: it is the fastest local option on this machine.
 - Alternatives: CPU (slow), Colab (ask first, see Phase 3).
 - Status: to be confirmed in Phase 3 (some MPS operations can be slow or missing).
+
+## D-013: Label meaning and label quality
+- Decision: `label` 0 = negative, 1 = positive. Source: Hugging Face repo `turkish-nlp-suite/SentiTurca` (a mirror `Setitic/SentiTurca` has identical files). Split sizes match the dataset card: train 60,411 / validation 8,905 / test 8,934.
+- Why: checked the card and then read random train examples of both labels. Classes are imbalanced (about 71% positive in every split).
+- Known issues: labels are derived from star ratings, so some are noisy (for example a clearly positive text labelled negative). The card's byte sizes for train do not match the real text lengths (mean about 46 words in all splits). We ignore the byte sizes.
+- Status: fixed.
+
+## D-014: Cleaning and duplicates
+- Decision: (1) drop empty texts (same rule for all splits, only 2 train rows hit); (2) drop train rows whose text also appears in validation or test (58 rows); (3) drop repeated texts inside train, keep the first (57 rows). Train 60,411 -> 60,294. Validation and test are untouched.
+- Matching: lowercase and collapsed whitespace, used only to find duplicates. The saved text stays raw.
+- Kept on purpose: 5 test rows have the same text as a validation row. Validation and test stay official. Phase 5 can report results with and without them.
+- Not cleaned: URLs, `[spoiler]` tags, emojis, very short texts (they are real reviews and carry signal; BERT and LLMs read raw text).
+- Why not "keep everything": a few exact repeats between train and test would leak. Why not touch test: it must stay the official split.
+- Known limitation: for 17 texts inside train the label conflicts across copies (for example "vasat"). We keep the first copy, which is arbitrary.
+- Log: removed rows are listed in `data/processed/cleaning_log.csv` (git-ignored).
+- Status: fixed (chosen by the user, option B).
+
+## D-015: LLM subset and few-shot pool
+- Decision: LLM subset = 1000 random test ids (seed 42, no stratification, 714 positive / 286 negative). Few-shot pool = 10 train ids (5 per class), drawn from reviews with 10-60 words, in one fixed shuffled order.
+- Why: the length range keeps prompts short and cheap. The 5-shot prompt needs 5 of the 10, and an odd number cannot be balanced. How to pick 5 from the pool (for example the first 5 in file order) is decided in Phase 4 and must be logged then.
+- Files: `data/llm_subset_ids.json`, `data/fewshot_ids.json` (ids are positions in the official split, `example_id` column).
+- Status: subset fixed, few-shot selection to be finalized in Phase 4.
+
+## Majority baseline (validation)
+- Always predicts positive: accuracy 0.7087, macro-F1 0.4148. Saved as `results/majority_validation.json`.

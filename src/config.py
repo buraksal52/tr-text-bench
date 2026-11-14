@@ -14,12 +14,20 @@ PROMPTS_DIR = PROJECT_ROOT / "prompts"
 LLM_SUBSET_IDS_FILE = DATA_DIR / "llm_subset_ids.json"
 FEWSHOT_IDS_FILE = DATA_DIR / "fewshot_ids.json"
 
-# Dataset (config name and label meaning are verified in Phase 1)
-DATASET_NAME = "SentiTurca"
+# Dataset (verified in Phase 1: config "movies" exists, 0 = negative, 1 = positive)
+DATASET_NAME = "turkish-nlp-suite/SentiTurca"
 DATASET_CONFIG = "movies"
+NEGATIVE_LABEL_ID = 0
+POSITIVE_LABEL_ID = 1
 
 # Models
 BERTURK_MODEL_NAME = "dbmdz/bert-base-turkish-cased"
 
 # LLM subset size (see docs/EVAL_PROTOCOL.md)
 LLM_SUBSET_SIZE = 1000
+
+# Few-shot pool: examples per class and a word range, so that very short
+# or very long reviews do not blow up the prompt
+FEWSHOT_PER_CLASS = 5
+FEWSHOT_MIN_WORDS = 10
+FEWSHOT_MAX_WORDS = 60

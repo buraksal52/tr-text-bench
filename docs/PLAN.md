@@ -23,15 +23,15 @@ Order matters, dates are flexible. Each session is about 2-3 hours.
 Done when: environment runs, `config.py` imports, repo is committed.
 
 ## Phase 1: Data
-- [ ] Load SentiTurca `movies` config; print columns, label names, class counts per split
-- [ ] Verify label meaning from the dataset card (how many classes, which id is positive). The cards looked inconsistent, so check by reading examples
-- [ ] EDA notebook: text length, empty or very short texts, class balance, duplicates
-- [ ] Cleaning only if justified. One step at a time, row counts printed, same cleaning for all splits
-- [ ] Duplicate check inside and across splits; decide and log it
-- [ ] Save processed splits to `data/processed/`
-- [ ] Draw the LLM subset (1000 from test) to `data/llm_subset_ids.json`
-- [ ] Draw the few-shot pool from train to `data/fewshot_ids.json`
-- [ ] Majority-class baseline on validation
+- [x] Load SentiTurca `movies` config; print columns, label names, class counts per split
+- [x] Verify label meaning from the dataset card (how many classes, which id is positive). The cards looked inconsistent, so check by reading examples
+- [x] EDA notebook: text length, empty or very short texts, class balance, duplicates
+- [x] Cleaning only if justified. One step at a time, row counts printed, same cleaning for all splits
+- [x] Duplicate check inside and across splits; decide and log it
+- [x] Save processed splits to `data/processed/`
+- [x] Draw the LLM subset (1000 from test) to `data/llm_subset_ids.json`
+- [x] Draw the few-shot pool from train to `data/fewshot_ids.json`
+- [x] Majority-class baseline on validation
 Done when: label meaning is confirmed and logged, splits are saved, id files exist.
 
 ## Phase 2: Baseline (TF-IDF + Logistic Regression)
