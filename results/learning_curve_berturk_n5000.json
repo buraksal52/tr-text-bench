@@ -1,0 +1,26 @@
+{
+  "model": "berturk",
+  "n_train": 5000,
+  "seed": 42,
+  "train_seconds": 631.6749820709229,
+  "val_macro_f1": 0.8259926528060029,
+  "val_accuracy": 0.8591802358225716,
+  "best_epoch": 3.0,
+  "epochs": [
+    {
+      "epoch": 1.0,
+      "val_macro_f1": 0.8087365057728562,
+      "val_accuracy": 0.8457046603032005
+    },
+    {
+      "epoch": 2.0,
+      "val_macro_f1": 0.8198593896839157,
+      "val_accuracy": 0.8562605277933745
+    },
+    {
+      "epoch": 3.0,
+      "val_macro_f1": 0.8259926528060029,
+      "val_accuracy": 0.8591802358225716
+    }
+  ]
+}
