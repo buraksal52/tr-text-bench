@@ -131,3 +131,10 @@ The walkthrough files in `learn/` explain the reasoning in more detail and only 
 - Labeling: one labeler (Claude), from the text and the true label only, before looking at which model was wrong (`results/error_sample_blind.csv` vs `error_sample_key.csv`). The planned cross-check by the user (25 examples) was dropped at the user's request. Limitations: single labeler, no agreement score; long reviews were read only up to about 350 characters.
 - Result (sample of 100, primary category): MIX 29, NOI 19, OFF 17, REF 12, SHT 5, LNG 5, INF 4, NEG 4, OTH 4, IRO 1. NOI counted as primary or secondary: 28; in 24 of those all three models were wrong. Files: `results/error_analysis.csv`, `notebooks/02_error_analysis.ipynb`, plots `results/plot_*.png`.
 - Status: fixed.
+
+## D-020: Publishing checks
+- License: MIT for the code (`LICENSE`, holder "trsent-bench authors", to be replaced with a real name if wanted). Review texts inside `results/error_analysis.csv` and `results/error_sample_blind.csv` stay under the dataset license (stated in the README).
+- Reproduction test: a fresh virtual environment (pandas 3.1.1, scikit-learn 1.9.1, datasets 5.2.0) in a copy of the repo without `data/raw`, `data/processed`, `checkpoints` and `.env`. Results: `01_prepare_data.py` gave the same row counts (60,294 / 8,905 / 8,934) and byte-identical `llm_subset_ids.json` and `fewshot_ids.json`; `02_tune_tfidf_lr.py` gave the same best parameters (C=1, word n-grams up to 2, balanced); `05_compare.py` reproduced the main table from the saved predictions.
+- Not re-run: BERTurk training (about 90 minutes, large downloads) and the Gemini calls (cost money). They are documented in the README as commands. Anyone who wants them installs `requirements.txt` fully.
+- Test split scripts were not re-run in the fresh environment, so the test split was not evaluated again.
+- Status: fixed.

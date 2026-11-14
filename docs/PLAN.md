@@ -70,9 +70,9 @@ Done when: results on the 1000-example subset are saved with cost and parse erro
 Done when: table, plots and categorized errors are saved in `results/`.
 
 ## Phase 6: Publish
-- [ ] Complete README (question, results, errors, limitations, attribution)
-- [ ] Re-run the instructions from a fresh virtual environment
-- [ ] Tag `v1.0`
+- [x] Complete README (question, results, errors, limitations, attribution)
+- [x] Re-run the instructions from a fresh virtual environment (light part only, see D-020)
+- [ ] Tag `v1.0` (the user does git writes; Claude only suggests the command)
 Done when: a stranger can reproduce the main table from the README.
 
 ## Phase 7: Bonus (optional, only after Phase 6)
