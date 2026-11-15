@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/logo.png" alt="tr-text-bench logo" width="500">
+</p>
+
 # trsent-bench
 
 ![Python 3.12](https://img.shields.io/badge/python-3.12-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green) ![Task](https://img.shields.io/badge/task-Turkish%20sentiment-orange)
