@@ -138,3 +138,17 @@ The walkthrough files in `learn/` explain the reasoning in more detail and only 
 - Not re-run: BERTurk training (about 90 minutes, large downloads) and the Gemini calls (cost money). They are documented in the README as commands. Anyone who wants them installs `requirements.txt` fully.
 - Test split scripts were not re-run in the fresh environment, so the test split was not evaluated again.
 - Status: fixed.
+
+## D-021: Learning curve (TF-IDF vs BERTurk)
+- Decision: train both models on nested random subsets of the train split (one shuffle, seed 42, first N rows for N = 1K, 5K, 20K, full 60K). Measured on validation only, the test split was not touched. One seed. TF-IDF uses the best parameters from D-016. BERTurk uses the Phase 3 settings (lr 2e-5, batch 32, 3 epochs, weight decay 0.01, warmup 0.1) with no checkpoint saved; the best epoch is chosen by validation macro-F1. Scripts: `src/06_learning_curve_tfidf.py`, `06_learning_curve_berturk.py`, `06_plot_learning_curve.py`.
+- Results (validation macro-F1): TF-IDF 0.739 / 0.783 / 0.793 / 0.812 for 1K / 5K / 20K / 60K. BERTurk 0.519 (3 epochs) or 0.803 (15 epochs) / 0.826 / 0.843 / 0.852. BERTurk training time 4.4 min (1K, 3 epochs), 31 min (1K, 15 epochs), 10.5 min (5K), 34.5 min (20K), 92 min (60K).
+- Reading: BERTurk is better than TF-IDF at every size once it gets enough update steps (+6.4, +4.3, +5.0, +4.0 points; the 1K number uses the 15-epoch run). With 1K examples and 3 epochs, only 96 steps were taken and the model stayed at the majority class (macro-F1 about 0.416 in epochs 1-2). That is a settings problem, not a data problem, so a 15-epoch run was added (best epoch 4: 0.803). Going from 20K to 60K gives BERTurk only +0.9 points for about 2.7x the training time.
+- Limitations: one seed (seed noise is probably large at 1K and 5K), the best epoch is picked on validation (slightly optimistic), the 1K 15-epoch run uses different settings than the other points, validation only.
+- Status: fixed.
+
+## D-022: Prompt sensitivity (Gemini 3.6 Flash, 0-shot)
+- Decision: three variants of the same task next to the frozen `fewshot_v1`: v2 (different Turkish wording and user format), v3 (English instruction, Turkish label words), v4 (strong "one word, no explanation" emphasis). Texts in `prompts/fewshot_v2.md` to `v4.md`, code reads them from `src/prompt_texts.py`. `src/04_llm_classify.py` takes the prompt version as an optional 4th argument (default v1, v1 files unchanged). Rule fixed before running: a variant replaces v1 only if it is better by more than 0.02 validation macro-F1.
+- Results (validation, same 200 examples, seed 42, 0-shot, 600 new calls, about $0.08): v1 0.879, v2 0.872, v3 0.866, v4 0.879 macro-F1. No parse errors. Input tokens for 200 examples: v1 33,000, v2 29,800, v3 30,800, v4 37,000 (v4 is about 12% more than v1).
+- Reading: no variant is better than v1 by more than 0.02, so v1 stays. No new test run was needed (v1 test result from D-018). The spread over four prompts is 0.013 macro-F1, about 2-3 examples out of 200, which is within what 200 examples can resolve. So on this task the result depends little on the wording; this does not say anything about other tasks or models.
+- Limitations: 200 validation examples, one run per prompt, only 3 variants, 0-shot only.
+- Status: fixed.

@@ -76,8 +76,8 @@ Done when: table, plots and categorized errors are saved in `results/`.
 Done when: a stranger can reproduce the main table from the README.
 
 ## Phase 7: Bonus (optional, only after Phase 6)
-- [ ] Prompt sensitivity: 3-4 prompt variants on validation, then the best on the subset
-- [ ] Calibration of LLM confidence (only if the API gives token probabilities)
-- [ ] A small local open model on the same subset
-- [ ] Learning curve: classical vs BERTurk with 1K / 5K / 20K / full train
-- [ ] 10-class version (BüyükSinema)
+- [x] Prompt sensitivity: 3-4 prompt variants on validation, then the best on the subset (3 variants on validation; none beat v1, so v1 stays and no new test run, see D-022)
+- [ ] Calibration of LLM confidence (only if the API gives token probabilities). Not done: Gemini 3.6 Flash returns 400 INVALID_ARGUMENT for logprobs.
+- [ ] A small local open model on the same subset. Not chosen.
+- [x] Learning curve: classical vs BERTurk with 1K / 5K / 20K / full train (D-021)
+- [ ] 10-class version (BüyükSinema). Not chosen.

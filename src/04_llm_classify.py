@@ -11,36 +11,33 @@ from google.genai import errors, types
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 
 import config
+from prompt_texts import PROMPTS
 
-# Usage: python src/04_llm_classify.py <validation|test> <zeroshot|fiveshot> <number of examples>
+# Usage: python src/04_llm_classify.py <validation|test> <zeroshot|fiveshot> <number of examples> [prompt version]
+# The prompt version is optional (default: config.PROMPT_VERSION, e.g. fewshot_v2). Texts live in src/prompt_texts.py.
 # validation: random sample of that size (seed from config). test: the first N ids of the fixed LLM subset.
 # Test is the final evaluation: only run it after the user said yes.
-# The prompt texts below are copied from prompts/fewshot_v1.md (frozen after its first validation run).
-SYSTEM_MESSAGE = """Sen bir duygu analizi sınıflandırıcısısın. Sana bir Türkçe film yorumu verilecek.
-Yorumun genel duygusunu belirle.
-Sadece şu iki kelimeden birini yaz: olumlu veya olumsuz.
-Başka hiçbir şey yazma."""
 LABEL_WORDS = {config.POSITIVE_LABEL_ID: "olumlu", config.NEGATIVE_LABEL_ID: "olumsuz"}
 WORD_TO_LABEL = {"olumlu": config.POSITIVE_LABEL_ID, "olumsuz": config.NEGATIVE_LABEL_ID}
 
 
-def make_user_text(review_text):
-    return f"Yorum: {review_text}\nDuygu:"
+def make_user_text(review_text, prompt_version):
+    return PROMPTS[prompt_version]["user"].format(text=review_text)
 
 
-def build_contents(review_text, mode, fewshot_df):
+def build_contents(review_text, mode, fewshot_df, prompt_version):
     contents = []
     if mode == "fiveshot":
         for _, example in fewshot_df.iterrows():
-            contents.append(types.Content(role="user", parts=[types.Part(text=make_user_text(example["text"]))]))
+            contents.append(types.Content(role="user", parts=[types.Part(text=make_user_text(example["text"], prompt_version))]))
             contents.append(types.Content(role="model", parts=[types.Part(text=LABEL_WORDS[example["label"]])]))
-    contents.append(types.Content(role="user", parts=[types.Part(text=make_user_text(review_text))]))
+    contents.append(types.Content(role="user", parts=[types.Part(text=make_user_text(review_text, prompt_version))]))
     return contents
 
 
-def ask_model(client, contents):
+def ask_model(client, contents, prompt_version):
     model_config = types.GenerateContentConfig(
-        system_instruction=SYSTEM_MESSAGE,
+        system_instruction=PROMPTS[prompt_version]["system"],
         temperature=config.LLM_TEMPERATURE,
         max_output_tokens=50,
         # Thinking is not needed for a one-word answer. It would only cost more tokens.
@@ -80,6 +77,7 @@ def load_cache(cache_file):
 
 def main():
     split_name, mode, n_examples = sys.argv[1], sys.argv[2], int(sys.argv[3])
+    prompt_version = sys.argv[4] if len(sys.argv) > 4 else config.PROMPT_VERSION
     load_dotenv(config.PROJECT_ROOT / ".env")
     client = genai.Client(api_key=os.getenv("LLM_API_KEY"))
 
@@ -94,7 +92,7 @@ def main():
     fewshot_df = train_df.loc[fewshot_ids].reset_index()
 
     config.LLM_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    cache_file = config.LLM_CACHE_DIR / f"{config.LLM_MODEL_NAME}_{config.PROMPT_VERSION}_{mode}_{split_name}.jsonl"
+    cache_file = config.LLM_CACHE_DIR / f"{config.LLM_MODEL_NAME}_{prompt_version}_{mode}_{split_name}.jsonl"
     cache = load_cache(cache_file)
     print("answers already in the cache:", len(cache))
 
@@ -102,16 +100,16 @@ def main():
         example_id = int(review["example_id"])
         if example_id in cache:
             continue
-        answer = ask_model(client, build_contents(review["text"], mode, fewshot_df))
+        answer = ask_model(client, build_contents(review["text"], mode, fewshot_df, prompt_version), prompt_version)
         answer["example_id"] = example_id
         cache[example_id] = answer
         with open(cache_file, "a") as file:
             file.write(json.dumps(answer, ensure_ascii=False) + "\n")
 
-    report(split_df, cache, split_name, mode)
+    report(split_df, cache, split_name, mode, prompt_version)
 
 
-def report(split_df, cache, split_name, mode):
+def report(split_df, cache, split_name, mode, prompt_version):
     true_labels = split_df["label"].tolist()
     predictions = []
     n_parse_errors = 0
@@ -145,7 +143,7 @@ def report(split_df, cache, split_name, mode):
     print("seconds per example (API latency, depends on the network):", round(total_seconds / n_examples, 2))
 
     result = {
-        "model": config.LLM_MODEL_NAME, "prompt_version": config.PROMPT_VERSION, "mode": mode, "split": split_name,
+        "model": config.LLM_MODEL_NAME, "prompt_version": prompt_version, "mode": mode, "split": split_name,
         "n_examples": n_examples, "accuracy": accuracy, "macro_f1": macro_f1, "parse_errors": n_parse_errors,
         "input_tokens": total_input_tokens, "output_tokens": total_output_tokens, "cost_usd": cost,
         "price_input_per_m": config.LLM_PRICE_INPUT_PER_M, "price_output_per_m": config.LLM_PRICE_OUTPUT_PER_M,
@@ -153,6 +151,8 @@ def report(split_df, cache, split_name, mode):
         "seconds_per_example": total_seconds / n_examples, "date": date.today().isoformat(),
     }
     name = f"llm_{config.LLM_MODEL_NAME}_{mode}_{split_name}_n{n_examples}"
+    if prompt_version != config.PROMPT_VERSION:
+        name = name + "_" + prompt_version  # keeps the v1 result files untouched
     (config.RESULTS_DIR / f"{name}.json").write_text(json.dumps(result, indent=2))
     predictions_df = pd.DataFrame({"example_id": split_df["example_id"].tolist(), "true_label": true_labels, "predicted_label": predictions})
     predictions_df.to_csv(config.RESULTS_DIR / f"{name}_predictions.csv", index=False)

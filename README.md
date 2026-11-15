@@ -39,6 +39,25 @@ How to read this:
 
 All numbers come from the files in `results/` (`comparison_table.csv`, `comparison_table_full_test.csv`, `pairwise_mcnemar.csv`).
 
+### Learning curve (validation only)
+
+Macro-F1 on the validation split when training on the first N rows of a shuffled train split (one seed).
+
+| Training examples | TF-IDF + LogReg | BERTurk |
+|---|---|---|
+| 1,000 | 0.739 | 0.803 (15 epochs; 3 epochs gave 0.519, too few steps) |
+| 5,000 | 0.783 | 0.826 |
+| 20,000 | 0.793 | 0.843 |
+| 60,294 (full) | 0.812 | 0.852 |
+
+BERTurk is ahead at every size once it gets enough training steps. From 20K to the full train split it gains only 0.9 points for about 2.7x the training time.
+
+![learning curve](results/plot_learning_curve.png)
+
+### Prompt sensitivity (validation only)
+
+Three rewordings of the 0-shot prompt, Gemini 3.6 Flash, same 200 validation examples: v1 0.879, v2 (other Turkish wording) 0.872, v3 (English instruction) 0.866, v4 ("one word, no explanation") 0.879 macro-F1. None beat v1 by more than the 0.02 margin fixed in advance, so v1 stays. On this task the wording matters little.
+
 ## Error analysis
 
 100 errors were sampled (35 where all three models are wrong, 40 where exactly one is wrong, 25 where two are wrong) from TF-IDF, BERTurk and Gemini 0-shot, and sorted into the categories in `docs/ERROR_TAXONOMY.md`. The category was assigned from the text and the true label, before looking at which model was wrong.
@@ -95,6 +114,13 @@ python src/04_llm_classify.py test fiveshot 1000
 python src/04_token_compare.py
 python src/05_compare.py
 python src/05_sample_errors.py
+# Bonus: prompt sensitivity (validation only, 3 x 200 calls)
+python src/04_llm_classify.py validation zeroshot 200 fewshot_v2   # also fewshot_v3, fewshot_v4
+# Bonus: learning curve (validation only)
+python src/06_learning_curve_tfidf.py
+python src/06_learning_curve_berturk.py 1000        # also 5000 and 20000
+python src/06_learning_curve_berturk.py 1000 15     # 1000 examples, 15 epochs
+python src/06_plot_learning_curve.py
 ```
 
 Notes:
@@ -106,10 +132,10 @@ Notes:
 ## Project structure
 
 ```
-src/            numbered scripts per phase (00 setup, 01 data, 02 TF-IDF, 03 BERTurk, 04 LLM, 05 comparison)
+src/            numbered scripts per phase (00 setup, 01 data, 02 TF-IDF, 03 BERTurk, 04 LLM, 05 comparison, 06 learning curve)
 src/config.py   all settings: seed, paths, model names, prices
 notebooks/      01_eda.ipynb (data exploration), 02_error_analysis.ipynb (plots, error categories)
-prompts/        fewshot_v1.md, the frozen LLM prompt
+prompts/        fewshot_v1.md (the frozen LLM prompt) and the variants v2 to v4 (prompt sensitivity)
 docs/           PLAN.md, EVAL_PROTOCOL.md (the rules), DECISIONS.md (every decision and why), ERROR_TAXONOMY.md
 results/        metrics, predictions, comparison tables, plots, LLM cache
 data/           llm_subset_ids.json, fewshot_ids.json (raw and processed data are git-ignored)
@@ -119,8 +145,9 @@ data/           llm_subset_ids.json, fewshot_ids.json (raw and processed data ar
 
 - **One dataset, one domain:** movie reviews only. Results may not transfer to other Turkish text.
 - **One seed for BERTurk.** A 3-seed run was planned, but one run crashed when the disk was full and the rest was stopped. No standard deviation over seeds is reported. The one other seed that reached the end of training (validation macro-F1 0.8535 vs 0.8519 for seed 42) suggests the seed effect is small, but it was not evaluated on test.
+- **The learning curve is one seed and validation only.** At 1K and 5K examples the seed effect is probably large. The best BERTurk epoch was picked on validation (slightly optimistic), and the 1K point uses 15 epochs instead of 3.
 - **Subset of 1000 test examples** for the model comparison, so the intervals are wide (about ±0.025). Small differences cannot be ranked.
-- **One LLM, one prompt version, one run.** Gemini output through an API is not fully deterministic even at temperature 0. The prompt was tuned on 200 validation examples only.
+- **One LLM, one run.** Gemini output through an API is not fully deterministic even at temperature 0. The prompt was chosen on 200 validation examples only. The prompt sensitivity check used 3 extra variants, 0-shot only.
 - **The LLM may have seen these reviews during pretraining.** We cannot check this.
 - **Weak labels:** star ratings, not human sentiment judgments. In the error sample, label noise appears in about 28% of the examples.
 - **Error analysis:** one labeler (an AI assistant), no agreement score, stratified sample of 100, and long reviews were read only up to about 350 characters.
